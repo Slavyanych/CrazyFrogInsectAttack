@@ -5,12 +5,26 @@ class Frog():
     def __init__(self, ai_game):
         '''Initializes the frog and sets its initial position'''
         self.screen = ai_game.screen
+        self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
         # Loads frog image and gets rectangle
         self.image = pygame.image.load('images/frog_0.bmp')
         self.rect = self.image.get_rect()
         # The frog appears at the bottom of the screen
         self.rect.midbottom = self.screen_rect.midbottom
+        # Saving the real coordinate of the center of the frog
+        self.x = float(self.rect.x)
+        # Move flag
+        self.moving_right = False
+        self.moving_left = False
+
+    def update(self):
+        # Updates the position of the frog based on th flag
+        if self.moving_right and self.rect.right < self.screen_rect.right:
+            self.x += self.settings.frog_speed
+        if self.moving_left and self.rect.left > 0:
+            self.x -= self.settings.frog_speed
+        self.rect.x = self.x
 
     def blitme(self):
         '''Draws a frog in the current position'''
