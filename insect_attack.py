@@ -3,6 +3,7 @@ import pygame
 from settings import Settings
 from frog import Frog
 from bullet import Bullet
+from fly import Fly
 
 class InsectAttack:
     '''Class for managing resources and game behavior'''
@@ -19,6 +20,9 @@ class InsectAttack:
         pygame.display.set_caption('Crazy Frog and Insect Attack')
         self.frog = Frog(self)
         self.bullets = pygame.sprite.Group()
+        self.flies =pygame.sprite.Group()
+
+        self._create_fly()
 
     def run_game(self):
         '''Start the main game loop'''
@@ -27,6 +31,7 @@ class InsectAttack:
             self.frog.update()
             self._update_bullets()
             self._update_screen()
+
 
 
     def _check_events(self):
@@ -48,6 +53,12 @@ class InsectAttack:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _create_fly(self):
+        '''Create the bunch of flies'''
+        # creste the fly
+        fly = Fly(self)
+        self.flies.add(fly)
+
     def _update_screen(self):
         '''Refreshes the screen image and displays the new screen'''
         # The screen is redrawn on each iteretion of the loop
@@ -55,6 +66,7 @@ class InsectAttack:
         self.frog.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        self.flies.draw(self.screen)
         # Displaying the last drawn screen
         pygame.display.flip()
 
