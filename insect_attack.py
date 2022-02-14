@@ -2,6 +2,7 @@ import sys
 import pygame
 from settings import Settings
 from frog import Frog
+from bullet import Bullet
 
 class InsectAttack:
     '''Class for managing resources and game behavior'''
@@ -17,13 +18,16 @@ class InsectAttack:
         # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Crazy Frog and Insect Attack')
         self.frog = Frog(self)
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         '''Start the main game loop'''
         while True:
             self._check_events()
             self.frog.update()
+            self._update_bullets()
             self._update_screen()
+
 
     def _check_events(self):
       '''Handles key presses and mouse event'''
@@ -35,11 +39,22 @@ class InsectAttack:
           elif event.type == pygame.KEYUP:
               self._check_keyup_events(event)
 
+    def _update_bullets(self):
+        '''Projectile position update. Removing bullets that have gone off the edge of the screen'''
+        self.bullets.update()
+
+        # Removing bullets that have gone off the edge of the screen
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
     def _update_screen(self):
         '''Refreshes the screen image and displays the new screen'''
         # The screen is redrawn on each iteretion of the loop
         self.screen.fill(self.settings.bg_color)
         self.frog.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
         # Displaying the last drawn screen
         pygame.display.flip()
 
@@ -53,6 +68,8 @@ class InsectAttack:
             self.frog.moving_left = True
         elif event.key == pygame.K_q:
             sys.exit()
+        elif event.key == pygame.K_SPACE:
+            self._fire_bullet()
 
     def _check_keyup_events(self, event):
         '''Responds to key release'''
@@ -60,6 +77,12 @@ class InsectAttack:
             self.frog.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.frog.moving_left = False
+
+    def _fire_bullet(self):
+        '''creating a new bullet and including it in a group af bullets'''
+        if len(self.bullets) < self.settings.bullet_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
 
 
 
