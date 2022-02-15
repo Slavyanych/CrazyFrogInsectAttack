@@ -31,6 +31,7 @@ class InsectAttack:
             self.frog.update()
             self._update_bullets()
             self._create_flies()
+            self._update_flies()
             self._update_screen()
 
 
@@ -54,25 +55,38 @@ class InsectAttack:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _update_flies(self):
+        '''Update the positions of all flies'''
+        self.flies.update()
+
     def _create_flies(self):
         '''Create the bunch of flies'''
         # creste the fly
         fly = Fly(self)
-        fly_widht = fly.rect.width
+        fly_widht, fly_height = fly.rect.size
         available_space_x = self.settings.screen_width - (2 * fly_widht)
         number_flies_x = available_space_x // (2 * fly_widht)
 
-        # Create the first row of flies
-        for fly_number in range(number_flies_x):
-            self._create_fly(fly_number)
+        # Determines the number of rows that fit on the screen
+        frog_height = self.frog.rect.height
+        available_space_y = (self.settings.screen_height -
+                             (3 * fly_height) - frog_height)
+        number_rows = available_space_y // (2 * fly_height)
+
+        # Create the bunch of flies
+        for row_number in range(number_rows):
+            # Create the first row of flies
+            for fly_number in range(number_flies_x):
+                self._create_fly(fly_number, row_number)
 
 
-    def _create_fly(self, fly_number):
+    def _create_fly(self, fly_number, row_number):
         '''Create a fly and add it to the row'''
         fly = Fly(self)
-        fly_widht = fly.rect.width
+        fly_widht, fly_heigth = fly.rect.size
         fly.x = fly_widht + 2 * fly_widht * fly_number
         fly.rect.x = fly.x
+        fly.rect.y = fly.rect.height + 2 * fly.rect.height * row_number
         self.flies.add(fly)
 
     def _update_screen(self):
