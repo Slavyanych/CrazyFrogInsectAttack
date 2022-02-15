@@ -20,9 +20,9 @@ class InsectAttack:
         pygame.display.set_caption('Crazy Frog and Insect Attack')
         self.frog = Frog(self)
         self.bullets = pygame.sprite.Group()
-        self.flies =pygame.sprite.Group()
+        self.flies = pygame.sprite.Group()
 
-        self._create_fly()
+
 
     def run_game(self):
         '''Start the main game loop'''
@@ -30,6 +30,7 @@ class InsectAttack:
             self._check_events()
             self.frog.update()
             self._update_bullets()
+            self._create_flies()
             self._update_screen()
 
 
@@ -53,10 +54,25 @@ class InsectAttack:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
-    def _create_fly(self):
+    def _create_flies(self):
         '''Create the bunch of flies'''
         # creste the fly
         fly = Fly(self)
+        fly_widht = fly.rect.width
+        available_space_x = self.settings.screen_width - (2 * fly_widht)
+        number_flies_x = available_space_x // (2 * fly_widht)
+
+        # Create the first row of flies
+        for fly_number in range(number_flies_x):
+            self._create_fly(fly_number)
+
+
+    def _create_fly(self, fly_number):
+        '''Create a fly and add it to the row'''
+        fly = Fly(self)
+        fly_widht = fly.rect.width
+        fly.x = fly_widht + 2 * fly_widht * fly_number
+        fly.rect.x = fly.x
         self.flies.add(fly)
 
     def _update_screen(self):
