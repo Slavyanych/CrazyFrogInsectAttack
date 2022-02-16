@@ -12,15 +12,16 @@ class InsectAttack:
         pygame.init()
         self.settings = Settings()
 
-        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
-        # # Launching the game in full screen mode
-        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        # self.settings.screen_width = self.screen.get_rect().width
-        # self.settings.screen_height = self.screen.get_rect().height
+        #self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        # Launching the game in full screen mode
+        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        self.settings.screen_width = self.screen.get_rect().width
+        self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Crazy Frog and Insect Attack')
         self.frog = Frog(self)
         self.bullets = pygame.sprite.Group()
         self.flies = pygame.sprite.Group()
+        self._create_flies()
 
 
 
@@ -30,7 +31,7 @@ class InsectAttack:
             self._check_events()
             self.frog.update()
             self._update_bullets()
-            self._create_flies()
+
             self._update_flies()
             self._update_screen()
 
@@ -55,8 +56,21 @@ class InsectAttack:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+        self._check_bullets_fly_collisions()
+
+    def _check_bullets_fly_collisions(self):
+        '''Handing bullets collisions with flies'''
+        # Check bullet impact
+        collisions = pygame.sprite.groupcollide(self.bullets, self.flies, False, True)
+
+        if not self.flies:
+            self.bullets.empty()
+            self._create_flies()
+
+
     def _update_flies(self):
         '''Update the positions of all flies'''
+        self._chack_flies_adges()
         self.flies.update()
 
     def _create_flies(self):
@@ -88,6 +102,21 @@ class InsectAttack:
         fly.rect.x = fly.x
         fly.rect.y = fly.rect.height + 2 * fly.rect.height * row_number
         self.flies.add(fly)
+
+
+    def _chack_flies_adges(self):
+        '''Reacts when reaching the edge of the screen'''
+        for fly in self.flies.sprites():
+            if fly.check_edges():
+                self._change_flies_direction()
+                break
+
+    def _change_flies_direction(self):
+        '''Lowers and reverses flies'''
+        for fly in self.flies.sprites():
+            fly.rect.y += self.settings.flies_drop_speed
+        self.settings.flies_direction *= -1
+
 
     def _update_screen(self):
         '''Refreshes the screen image and displays the new screen'''
@@ -125,6 +154,8 @@ class InsectAttack:
         if len(self.bullets) < self.settings.bullet_allowed:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
+
+
 
 
 

@@ -14,4 +14,7 @@ class Settings:
         self.bullet_allowed = 5
         # Fly settings
         self.fly_speed = 3.0
+        self.flies_drop_speed = 10
+        # flies_direction = 1 means moving to the right; -1 to the left
+        self.flies_direction = 1
 

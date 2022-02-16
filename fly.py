@@ -18,7 +18,12 @@ class Fly(Sprite):
         self.x = float(self.rect.x)
 
     def update(self):
-        '''Move flies to the right'''
-        self.x += self.settings.fly_speed
+        '''Move flies to the right or left'''
+        self.x += (self.settings.fly_speed * self.settings.flies_direction)
         self.rect.x = self.x
 
+    def check_edges(self):
+        '''Returns True if the fly is at the edge af the screen'''
+        screen_rect = self.screen.get_rect()
+        if self.rect.right >= screen_rect.right or self.rect.left <= 0:
+            return True
