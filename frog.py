@@ -30,4 +30,9 @@ class Frog():
         '''Draws a frog in the current position'''
         self.screen.blit(self.image, self.rect)
 
+    def center_frog(self):
+        '''Placement of the frog in the center'''
+        self.rect.midbottom = self.screen_rect.midbottom
+        self.x = float(self.rect.x)
+
 

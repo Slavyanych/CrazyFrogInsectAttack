@@ -1,6 +1,9 @@
 import sys
 import pygame
+from time import sleep
+
 from settings import Settings
+from game_stats import GameStats
 from frog import Frog
 from bullet import Bullet
 from fly import Fly
@@ -12,12 +15,16 @@ class InsectAttack:
         pygame.init()
         self.settings = Settings()
 
-        #self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
-        # Launching the game in full screen mode
-        self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
-        self.settings.screen_width = self.screen.get_rect().width
-        self.settings.screen_height = self.screen.get_rect().height
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        # # Launching the game in full screen mode
+        # self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+        # self.settings.screen_width = self.screen.get_rect().width
+        # self.settings.screen_height = self.screen.get_rect().height
         pygame.display.set_caption('Crazy Frog and Insect Attack')
+
+        # Creating an instance for storing game statistics
+        self.stats = GameStats(self)
+
         self.frog = Frog(self)
         self.bullets = pygame.sprite.Group()
         self.flies = pygame.sprite.Group()
@@ -29,10 +36,10 @@ class InsectAttack:
         '''Start the main game loop'''
         while True:
             self._check_events()
-            self.frog.update()
-            self._update_bullets()
-
-            self._update_flies()
+            if self.stats.game_active:
+                self.frog.update()
+                self._update_bullets()
+                self._update_flies()
             self._update_screen()
 
 
@@ -72,6 +79,38 @@ class InsectAttack:
         '''Update the positions of all flies'''
         self._chack_flies_adges()
         self.flies.update()
+
+        # Checking collisions "fly - frog"
+        if pygame.sprite.spritecollideany(self.frog, self.flies):
+            self._frog_hit()
+
+        # Check if the flies have reached the bottom edge
+        self._check_flies_bottom()
+
+
+    def _frog_hit(self):
+        ''' Processing collisions "fly - frog" '''
+        if self.stats.frog_left > 0:
+            self.stats.frog_left -= 1
+            # Clearing lists
+            self.flies.empty()
+            self.bullets.empty()
+            # Creation of a new group of files. Placement of the frog in the center
+            self._create_flies()
+            self.frog.center_frog()
+            # Pause
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
+
+    def _check_flies_bottom(self):
+        '''Checks if the flies have reached the bottom of the screen'''
+        screen_rect = self.screen.get_rect()
+        for fly in self.flies.sprites():
+            if fly.rect.bottom >= screen_rect.bottom:
+            #The same thing happens as in a collision with a frog
+                self._frog_hit()
+                break
 
     def _create_flies(self):
         '''Create the bunch of flies'''
