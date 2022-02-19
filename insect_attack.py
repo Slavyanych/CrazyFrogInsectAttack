@@ -7,6 +7,7 @@ from game_stats import GameStats
 from frog import Frog
 from bullet import Bullet
 from fly import Fly
+from button import Button
 
 class InsectAttack:
     '''Class for managing resources and game behavior'''
@@ -29,6 +30,9 @@ class InsectAttack:
         self.bullets = pygame.sprite.Group()
         self.flies = pygame.sprite.Group()
         self._create_flies()
+
+        # Creating a Play button
+        self.play_button = Button(self, 'Play')
 
 
 
@@ -53,6 +57,28 @@ class InsectAttack:
               self._check_keydown_events(event)
           elif event.type == pygame.KEYUP:
               self._check_keyup_events(event)
+          elif event.type == pygame.MOUSEBUTTONDOWN:
+              mouse_pos = pygame.mouse.get_pos()
+              self._check_play_button(mouse_pos)
+
+    def _check_play_button(self, mouse_pos):
+        '''Launches a new game when the Play button is pressed'''
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and not self.stats.game_active:
+            # Reset game ststistics
+            self.stats.reset_stats()
+            self.stats.game_active = True
+            # Clear lists of flies and shells
+            self.flies.empty()
+            self.bullets.empty()
+            # Create a new frog and flies
+            self._create_flies()
+            self.frog.center_frog()
+            # Mouse pointer hides
+            pygame.mouse.set_visible(False)
+
+
+
 
     def _update_bullets(self):
         '''Projectile position update. Removing bullets that have gone off the edge of the screen'''
@@ -102,6 +128,7 @@ class InsectAttack:
             sleep(0.5)
         else:
             self.stats.game_active = False
+            pygame.mouse.set_visible(True)
 
     def _check_flies_bottom(self):
         '''Checks if the flies have reached the bottom of the screen'''
@@ -165,6 +192,9 @@ class InsectAttack:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.flies.draw(self.screen)
+        # The Play button is displayed if the game is inactive
+        if not self.stats.game_active:
+            self.play_button.draw_button()
         # Displaying the last drawn screen
         pygame.display.flip()
 
