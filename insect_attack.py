@@ -65,19 +65,25 @@ class InsectAttack:
         '''Launches a new game when the Play button is pressed'''
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
-            # Reset game ststistics
-            self.stats.reset_stats()
-            self.stats.game_active = True
-            # Clear lists of flies and shells
-            self.flies.empty()
-            self.bullets.empty()
-            # Create a new frog and flies
-            self._create_flies()
-            self.frog.center_frog()
-            # Mouse pointer hides
-            pygame.mouse.set_visible(False)
+            self.settings.initialize_dynamic_settings()
+            self.start_game()
 
+    def start_game(self):
+        '''Start a new game'''
+        # Reset game ststistics
+        self.stats.reset_stats()
+        self.stats.game_active = True
 
+        # Clear lists of flies and shells
+        self.flies.empty()
+        self.bullets.empty()
+
+        # Create a new frog and flies
+        self._create_flies()
+        self.frog.center_frog()
+
+        # Mouse pointer hides
+        pygame.mouse.set_visible(False)
 
 
     def _update_bullets(self):
@@ -99,6 +105,7 @@ class InsectAttack:
         if not self.flies:
             self.bullets.empty()
             self._create_flies()
+            self.settings.increase_speed()
 
 
     def _update_flies(self):
@@ -150,7 +157,7 @@ class InsectAttack:
         # Determines the number of rows that fit on the screen
         frog_height = self.frog.rect.height
         available_space_y = (self.settings.screen_height -
-                             (3 * fly_height) - frog_height)
+                             (3 * fly_height) - 4 * frog_height)
         number_rows = available_space_y // (2 * fly_height)
 
         # Create the bunch of flies
@@ -210,6 +217,9 @@ class InsectAttack:
             sys.exit()
         elif event.key == pygame.K_SPACE:
             self._fire_bullet()
+        elif event.key == pygame.K_p and not self.stats.game_active:
+            self.start_game()
+
 
     def _check_keyup_events(self, event):
         '''Responds to key release'''
