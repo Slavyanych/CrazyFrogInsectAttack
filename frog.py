@@ -1,17 +1,21 @@
 import pygame
+from pygame.sprite import Sprite
 
-class Frog():
+class Frog(Sprite):
     '''Frog control class'''
     def __init__(self, ai_game):
         '''Initializes the frog and sets its initial position'''
+        super(Frog, self).__init__()
+
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.screen_rect = ai_game.screen.get_rect()
+
         # Loads frog image and gets rectangle
         self.image = pygame.image.load('images/frog_0.bmp')
         self.rect = self.image.get_rect()
         # The frog appears at the bottom of the screen
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect.bottom = self.screen_rect.bottom
         # Saving the real coordinate of the center of the frog
         self.x = float(self.rect.x)
         # Move flag

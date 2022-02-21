@@ -70,11 +70,15 @@ class InsectAttack:
             self.settings.initialize_dynamic_settings()
             self.start_game()
 
+
     def start_game(self):
         '''Start a new game'''
         # Reset game ststistics
         self.stats.reset_stats()
         self.stats.game_active = True
+        self.sb.prep_score()
+        self.sb.prep_level()
+        self.sb.prep_frogs()
 
         # Clear lists of flies and shells
         self.flies.empty()
@@ -113,6 +117,9 @@ class InsectAttack:
             self.bullets.empty()
             self._create_flies()
             self.settings.increase_speed()
+            # Level increase
+            self.stats.level += 1
+            self.sb.prep_level()
 
 
     def _update_flies(self):
@@ -132,6 +139,7 @@ class InsectAttack:
         ''' Processing collisions "fly - frog" '''
         if self.stats.frog_left > 0:
             self.stats.frog_left -= 1
+            self.sb.prep_frogs()
             # Clearing lists
             self.flies.empty()
             self.bullets.empty()
