@@ -8,6 +8,7 @@ from frog import Frog
 from bullet import Bullet
 from fly import Fly
 from button import Button
+from scoreboard import Scoreboard
 
 class InsectAttack:
     '''Class for managing resources and game behavior'''
@@ -25,6 +26,7 @@ class InsectAttack:
 
         # Creating an instance for storing game statistics
         self.stats = GameStats(self)
+        self.sb = Scoreboard(self)
 
         self.frog = Frog(self)
         self.bullets = pygame.sprite.Group()
@@ -100,7 +102,12 @@ class InsectAttack:
     def _check_bullets_fly_collisions(self):
         '''Handing bullets collisions with flies'''
         # Check bullet impact
-        collisions = pygame.sprite.groupcollide(self.bullets, self.flies, False, True)
+        collisions = pygame.sprite.groupcollide(self.bullets, self.flies, True, True)
+        if collisions:
+            for flies in collisions.values():
+                self.stats.score += self.settings.fly_points * len(flies)
+            self.sb.prep_score()
+            self.sb.check_high_score()
 
         if not self.flies:
             self.bullets.empty()
@@ -199,9 +206,14 @@ class InsectAttack:
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
         self.flies.draw(self.screen)
+
+        # Show score on screen
+        self.sb.show_score()
+
         # The Play button is displayed if the game is inactive
         if not self.stats.game_active:
             self.play_button.draw_button()
+
         # Displaying the last drawn screen
         pygame.display.flip()
 

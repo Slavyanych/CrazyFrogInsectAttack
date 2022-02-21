@@ -9,7 +9,7 @@ class Settings:
         self.frog_limit = 3
 
         # projectile parameters
-        self.bullet_width = 4
+        self.bullet_width = 500
         self.bullet_height = 15
         self.bullet_color = (155, 65, 65)
         self.bullet_allowed = 5
@@ -18,7 +18,9 @@ class Settings:
         self.flies_drop_speed = 10
 
         # Game acceleration rate
-        self.speedup_scale = 1.1
+        self.speedup_scale = 1.2
+        # Flies cost growth rate
+        self.score_scale = 1.5
         self.initialize_dynamic_settings()
 
     def initialize_dynamic_settings(self):
@@ -30,11 +32,17 @@ class Settings:
         # flies_direction = 1 means moving to the right; -1 to the left
         self.flies_direction = 1
 
+        # Scoring
+        self.fly_points = 10
+
     def increase_speed(self):
         ''' Increases speed settings'''
         self.frog_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
         self.fly_speed *= self.speedup_scale
+        self.fly_points = int(self.fly_points * self.score_scale)
+
+
 
 
 
